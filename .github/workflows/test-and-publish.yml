@@ -44,13 +44,13 @@ jobs:
           load: true
           platforms: linux/amd64, linux/arm64
 
-      
+      name: Start agent container
       env:
          # List only the specific secrets your agent needs:
          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
       run: |
          docker run -d -p 9009:9009 --name agent-container \
-+          -e GOOGLE_API_KEY="$GOOGLE_API_KEY" \ 
+           -e GOOGLE_API_KEY="$GOOGLE_API_KEY" \ 
            $(echo "${{ steps.meta.outputs.tags }}" | head -n1) --host 0.0.0.0 --port 9009
            timeout 30 bash -c 'until curl -sf http://localhost:9009/.well-known/agent-card.json > /dev/null; do sleep 1; done'
 
