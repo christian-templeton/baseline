@@ -44,9 +44,6 @@ How It Works
 # Attribution
 
 1. Agent logic\
-````Barres, V., Dong, H., Ray, S., Si, X., & Narasimhan, K. (2025). *$\tau^2$-Bench: Evaluating Conversational Agents in a Dual-Control Environment*. arXiv preprint arXiv:2506.07982. [https://arxiv.org/abs/2506.07982]````
-      
+````Barres, V., Dong, H., Ray, S., Si, X., & Narasimhan, K. (2025). *$\tau^2$-Bench: Evaluating Conversational Agents in a Dual-Control Environment*. arXiv preprint arXiv:2506.07982.````
 2. Agent names\
-````Arendt, Hannah. *The Human Condition*. 2nd ed. Chicago: The University of Chicago Press, 1998.````  
-
-All other materials not attributed to the above is covered un Creative Commons Attribution 4.0
+````Arendt, Hannah. *The Human Condition*. 2nd ed. Chicago: The University of Chicago Press, 1998.````
