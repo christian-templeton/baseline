@@ -1,4 +1,4 @@
-# Agent Roles
+# How it works
 
 The system uses two types of agents:
 
@@ -27,10 +27,24 @@ How It Works
 
 3. The Activa Agent simply responds to messages using its tools, unaware it's being evaluated.
 
+# Configuring and running
+
+1. Clone locally
+   git clone https://github.com/christian-templeton/contempletiva-agent
+   
+2. Install dependencies
+   uv sync
+
+3. add an .env file to the folder you cloned this repository to in step 1, and add you Gemini API key here as below
+   GOOGLE_API_KEY=your_actual_api_key_here
+
+4. Run the server
+   uv run src/server.py
+
 # Attribution
 
 Barres, V., Dong, H., Ray, S., Si, X., & Narasimhan, K. (2025). *$\tau^2$-Bench: Evaluating Conversational Agents in a Dual-Control Environment*. arXiv preprint arXiv:2506.07982. [https://arxiv.org/abs/2506.07982]
       
-Arendt, Hannah. *The Human Condition*. 2nd ed. Chicago: The University of Chicago Press, 1998.   
+Agent names of Contempletiva and Activa are in referece to the book: Arendt, Hannah. *The Human Condition*. 2nd ed. Chicago: The University of Chicago Press, 1998.   
 
 All other materials not attributed to the above is covered un Creative Commons Attribution 4.0
