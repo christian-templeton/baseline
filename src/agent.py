@@ -1,8 +1,5 @@
 """Green agent implementation - manages assessment and evaluation."""
 
-import os
-os.environ["TAU_DATA_DIR"] = "/home/agent/src/tau2"
-
 import asyncio
 import json
 import os
