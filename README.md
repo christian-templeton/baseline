@@ -46,7 +46,7 @@ Agent actions
    ````AGENT_URL=http://localhost9009````
 
 5. Run the container\
-   docker run -p 9009:9009 --env-file .env your-agent
+   ````docker run -p 9009:9009 --env-file .env my-agent````
 
 # Attribution
 
