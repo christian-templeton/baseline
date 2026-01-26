@@ -2,8 +2,10 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm
 
 WORKDIR /app
 
-COPY pyproject.toml uv.lock README.md ./
+COPY pyproject.toml README.md ./
 COPY src src
+
+RUN uv pip compile pyproject.toml -o uv.lock
 
 RUN \
     --mount=type=cache,target=/root/.cache/uv \
