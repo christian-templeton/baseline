@@ -42,17 +42,18 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           load: true
-          platforms: linux/arm64,linux/amd64
+          platforms: linux/amd64
 
       - name: Start agent container
         env:
           # List only the specific secrets your agent needs:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
+          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
           docker run -d -p 9009:9009 --name agent-container \
             -e GOOGLE_API_KEY="$GOOGLE_API_KEY" \
-            $(echo "${{ steps.meta.outputs.tags }}" | head -n1) --host 0.0.0.0 --port 9009
-        timeout 30 bash -c 'until curl -sf http://localhost:9009/.well-known/agent-card.json > /dev/null; do sleep 1; done'
+            $IMAGE_TAG --host 0.0.0.0 --port 9009
+          timeout 60 bash -c 'until curl -sf http://localhost:9009/.well-known/agent-card.json; do echo "still waiting..."; sleep 2; done'
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v4
