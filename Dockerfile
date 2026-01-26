@@ -20,6 +20,6 @@ RUN mkdir -p /tmp/tau2-bench && \
     cp -r /tmp/tau2-bench/src/tau2/domains "${SITE_PACKAGES}/tau2/" && \
     rm -rf /tmp/tau2-bench
 
-ENTRYPOINT ["uv", "run", "src/server.py"]
-CMD ["--host", "0.0.0.0"]
+ENTRYPOINT ["uv", "run"]
+CMD ["src/server.py", "--host", "0.0.0.0", "--port", "9009"]
 EXPOSE 9009
