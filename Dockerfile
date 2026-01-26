@@ -1,24 +1,24 @@
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm
 
-RUN adduser agent
-USER agent
-WORKDIR /home/agent
+WORKDIR /app
 
-COPY --chown=agent:agent pyproject.toml uv.lock README.md ./
-COPY --chown=agent:agent src src
+COPY pyproject.toml uv.lock README.md ./
+COPY src src
 
 RUN \
-    --mount=type=cache,target=/home/agent/.cache/uv,uid=1000 \
+    --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked
 
-RUN uv add python-dotenv gymnasium
-RUN uv add "tau2 @ git+https://github.com/sierra-research/tau2-bench"
-RUN uv add "agentify-tau-bench @ git+https://github.com/sierra-research/tau2-bench#subdirectory=src/experiments/agentify_tau_bench"
+RUN uv add python-dotenv gymnasium \
+    "tau2 @ git+https://github.com/sierra-research/tau2-bench" \
+    "agentify-tau-bench @ git+https://github.com/sierra-research/tau2-bench#subdirectory=src/experiments/agentify_tau_bench"
 
-RUN curl -L https://github.com/sierra-research/tau2-bench/archive/refs/heads/main.tar.gz | \
-    tar -xz --strip-components=1 -C /home/agent && \
-    mkdir -p /home/agent/.venv/lib/python3.13/data/tau2 && \
-    cp -r /home/agent/src/tau2/domains /home/agent/.venv/lib/python3.13/data/tau2/
+RUN mkdir -p /tmp/tau2-bench && \
+    curl -L https://github.com/sierra-research/tau2-bench/archive/refs/heads/main.tar.gz | \
+    tar -xz --strip-components=1 -C /tmp/tau2-bench && \
+    SITE_PACKAGES=$(uv run python -c 'import site; print(site.getsitepackages()[0])') && \
+    cp -r /tmp/tau2-bench/src/tau2/domains "${SITE_PACKAGES}/tau2/" && \
+    rm -rf /tmp/tau2-bench
 
 ENTRYPOINT ["uv", "run", "src/server.py"]
 CMD ["--host", "0.0.0.0"]
