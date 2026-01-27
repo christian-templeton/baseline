@@ -1,181 +1,199 @@
-import json
-from unittest.mock import AsyncMock, MagicMock, patch
-
+from typing import Any
 import pytest
-from a2a.types import Message, SendMessageResponse, SendMessageSuccessResponse
-from agentify_tau_bench.green_agent.agent import (
-    RESPOND_ACTION_NAME,
-    TauGreenAgentExecutor,
-    ask_agent_to_solve,
-    load_agent_card_toml,
-    start_green_agent,
-    tools_to_str,
-)
+import httpx
+from uuid import uuid4
+
+from a2a.client import A2ACardResolver, ClientConfig, ClientFactory
+from a2a.types import Message, Part, Role, TextPart
 
 
-class TestLoadAgentCardToml:
-    """Test loading agent card from TOML file."""
+# A2A validation helpers - adapted from https://github.com/a2aproject/a2a-inspector/blob/main/backend/validators.py
 
-    def test_load_agent_card_toml(self):
-        """Test loading the tau_green_agent TOML configuration."""
-        result = load_agent_card_toml("tau_green_agent")
+def validate_agent_card(card_data: dict[str, Any]) -> list[str]:
+    """Validate the structure and fields of an agent card."""
+    errors: list[str] = []
 
-        assert isinstance(result, dict)
-        assert "name" in result
-        assert "description" in result
+    # Use a frozenset for efficient checking and to indicate immutability.
+    required_fields = frozenset(
+        [
+            'name',
+            'description',
+            'url',
+            'version',
+            'capabilities',
+            'defaultInputModes',
+            'defaultOutputModes',
+            'skills',
+        ]
+    )
 
+    # Check for the presence of all required fields
+    for field in required_fields:
+        if field not in card_data:
+            errors.append(f"Required field is missing: '{field}'.")
 
-class TestToolsToStr:
-    """Test converting tools to string format."""
-
-    def test_tools_to_str_empty(self):
-        """Test converting empty tools list to string format."""
-        result = tools_to_str([])
-        assert result == "[]"
-
-    def test_tools_to_str_tools(self):
-        """Test converting tools to string format."""
-        mock_tool1 = MagicMock()
-        mock_tool1.openai_schema = {"name": "tool1", "description": "First tool"}
-
-        mock_tool2 = MagicMock()
-        mock_tool2.openai_schema = {"name": "tool2", "description": "Second tool"}
-
-        result = tools_to_str([mock_tool1, mock_tool2])
-        parsed = json.loads(result)
-
-        assert len(parsed) == 2
-        assert parsed[0]["name"] == "tool1"
-        assert parsed[1]["name"] == "tool2"
-
-
-class TestAskAgentToSolve:
-    """Test the ask_agent_to_solve function."""
-
-    @pytest.mark.asyncio
-    async def test_ask_agent_to_solve_basic(self):
-        """Test basic agent interaction flow."""
-        # Mock environment
-        mock_env = MagicMock()
-        mock_env.reset.return_value = (
-            "User message",
-            {"policy": "Be helpful", "tools": []},
-        )
-        mock_env.step.return_value = (
-            "Done",
-            1.0,
-            True,
-            False,
-            {"simulation_run": None, "reward_info": None},
+    # Check if 'url' is an absolute URL (basic check)
+    if 'url' in card_data and not (
+        card_data['url'].startswith('http://')
+        or card_data['url'].startswith('https://')
+    ):
+        errors.append(
+            "Field 'url' must be an absolute URL starting with http:// or https://."
         )
 
-        # Mock white agent response
-        mock_message = Message(
-            role="agent", parts=[], message_id="msg1", context_id="ctx1"
+    # Check if capabilities is a dictionary
+    if 'capabilities' in card_data and not isinstance(
+        card_data['capabilities'], dict
+    ):
+        errors.append("Field 'capabilities' must be an object.")
+
+    # Check if defaultInputModes and defaultOutputModes are arrays of strings
+    for field in ['defaultInputModes', 'defaultOutputModes']:
+        if field in card_data:
+            if not isinstance(card_data[field], list):
+                errors.append(f"Field '{field}' must be an array of strings.")
+            elif not all(isinstance(item, str) for item in card_data[field]):
+                errors.append(f"All items in '{field}' must be strings.")
+
+    # Check skills array
+    if 'skills' in card_data:
+        if not isinstance(card_data['skills'], list):
+            errors.append(
+                "Field 'skills' must be an array of AgentSkill objects."
+            )
+        elif not card_data['skills']:
+            errors.append(
+                "Field 'skills' array is empty. Agent must have at least one skill if it performs actions."
+            )
+
+    return errors
+
+
+def _validate_task(data: dict[str, Any]) -> list[str]:
+    errors = []
+    if 'id' not in data:
+        errors.append("Task object missing required field: 'id'.")
+    if 'status' not in data or 'state' not in data.get('status', {}):
+        errors.append("Task object missing required field: 'status.state'.")
+    return errors
+
+
+def _validate_status_update(data: dict[str, Any]) -> list[str]:
+    errors = []
+    if 'status' not in data or 'state' not in data.get('status', {}):
+        errors.append(
+            "StatusUpdate object missing required field: 'status.state'."
         )
-        mock_success = SendMessageSuccessResponse(result=mock_message)
-        mock_response = SendMessageResponse(root=mock_success)
-
-        with (
-            patch("agentify_tau_bench.green_agent.agent.a2a_send_message") as mock_send,
-            patch(
-                "agentify_tau_bench.green_agent.agent.get_text_parts"
-            ) as mock_get_text,
-        ):
-
-            mock_send.return_value = mock_response
-            mock_get_text.return_value = [
-                f'<json>{json.dumps({"name": RESPOND_ACTION_NAME, "arguments": {"content": "Hello"}})}</json>'
-            ]
-
-            await ask_agent_to_solve("http://white-agent", mock_env)
-
-            # Verify basic interactions
-            mock_env.reset.assert_called_once()
-            mock_env.step.assert_called_once()
-            mock_send.assert_called_once()
+    return errors
 
 
-class TestTauGreenAgentExecutor:
-    """Test the TauGreenAgentExecutor class."""
-
-    def test_executor_initialization(self):
-        """Test executor can be initialized."""
-        executor = TauGreenAgentExecutor()
-        assert executor is not None
-
-    @pytest.mark.asyncio
-    async def test_execute_basic_flow(self):
-        """Test that execute runs the basic flow."""
-        executor = TauGreenAgentExecutor()
-
-        mock_context = MagicMock()
-        env_config = {"domain": "mock", "task_ids": ["task1"]}
-        user_input = f"""
-<white_agent_url>http://localhost:9000</white_agent_url>
-<env_config>{json.dumps(env_config)}</env_config>
-"""
-        mock_context.get_user_input.return_value = user_input
-        mock_event_queue = AsyncMock()
-
-        with (
-            patch("agentify_tau_bench.green_agent.agent.gym.make") as mock_gym_make,
-            patch(
-                "agentify_tau_bench.green_agent.agent.get_task_ids"
-            ) as mock_get_task_ids,
-            patch(
-                "agentify_tau_bench.green_agent.agent.ask_agent_to_solve"
-            ) as mock_ask,
-        ):
-
-            mock_env = MagicMock()
-            mock_gym_make.return_value = mock_env
-            mock_get_task_ids.return_value = ["task1"]
-
-            # Mock successful simulation
-            mock_simulation = MagicMock()
-            mock_simulation.reward_info.reward = 1
-            mock_ask.return_value = mock_simulation
-
-            await executor.execute(mock_context, mock_event_queue)
-
-            # Verify components were called
-            mock_gym_make.assert_called_once()
-            mock_ask.assert_called_once()
-            mock_event_queue.enqueue_event.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_cancel_not_implemented(self):
-        """Test that cancel raises NotImplementedError."""
-        executor = TauGreenAgentExecutor()
-        with pytest.raises(NotImplementedError):
-            await executor.cancel(MagicMock(), AsyncMock())
+def _validate_artifact_update(data: dict[str, Any]) -> list[str]:
+    errors = []
+    if 'artifact' not in data:
+        errors.append(
+            "ArtifactUpdate object missing required field: 'artifact'."
+        )
+    elif (
+        'parts' not in data.get('artifact', {})
+        or not isinstance(data.get('artifact', {}).get('parts'), list)
+        or not data.get('artifact', {}).get('parts')
+    ):
+        errors.append("Artifact object must have a non-empty 'parts' array.")
+    return errors
 
 
-class TestStartGreenAgent:
-    """Test the start_green_agent function."""
+def _validate_message(data: dict[str, Any]) -> list[str]:
+    errors = []
+    if (
+        'parts' not in data
+        or not isinstance(data.get('parts'), list)
+        or not data.get('parts')
+    ):
+        errors.append("Message object must have a non-empty 'parts' array.")
+    if 'role' not in data or data.get('role') != 'agent':
+        errors.append("Message from agent must have 'role' set to 'agent'.")
+    return errors
 
-    def test_start_green_agent_setup(self):
-        """Test that start_green_agent sets up and runs the server."""
-        with (
-            patch(
-                "agentify_tau_bench.green_agent.agent.load_agent_card_toml"
-            ) as mock_load,
-            patch("agentify_tau_bench.green_agent.agent.AgentCard"),
-            patch("agentify_tau_bench.green_agent.agent.DefaultRequestHandler"),
-            patch("agentify_tau_bench.green_agent.agent.A2AStarletteApplication"),
-            patch("agentify_tau_bench.green_agent.agent.uvicorn.run") as mock_run,
-        ):
 
-            mock_load.return_value = {"name": "test_agent", "description": "Test"}
+def validate_event(data: dict[str, Any]) -> list[str]:
+    """Validate an incoming event from the agent based on its kind."""
+    if 'kind' not in data:
+        return ["Response from agent is missing required 'kind' field."]
 
-            start_green_agent(agent_name="tau_green_agent", host="localhost", port=9001)
+    kind = data.get('kind')
+    validators = {
+        'task': _validate_task,
+        'status-update': _validate_status_update,
+        'artifact-update': _validate_artifact_update,
+        'message': _validate_message,
+    }
 
-            # Verify TOML was loaded
-            mock_load.assert_called_once_with("tau_green_agent")
+    validator = validators.get(str(kind))
+    if validator:
+        return validator(data)
 
-            # Verify uvicorn.run was called
-            mock_run.assert_called_once()
-            call_kwargs = mock_run.call_args[1]
-            assert call_kwargs["host"] == "localhost"
-            assert call_kwargs["port"] == 9001
+    return [f"Unknown message kind received: '{kind}'."]
+
+
+# A2A messaging helpers
+
+async def send_text_message(text: str, url: str, context_id: str | None = None, streaming: bool = False):
+    async with httpx.AsyncClient(timeout=10) as httpx_client:
+        resolver = A2ACardResolver(httpx_client=httpx_client, base_url=url)
+        agent_card = await resolver.get_agent_card()
+        config = ClientConfig(httpx_client=httpx_client, streaming=streaming)
+        factory = ClientFactory(config)
+        client = factory.create(agent_card)
+
+        msg = Message(
+            kind="message",
+            role=Role.user,
+            parts=[Part(TextPart(text=text))],
+            message_id=uuid4().hex,
+            context_id=context_id,
+        )
+
+        events = [event async for event in client.send_message(msg)]
+
+    return events
+
+
+# A2A conformance tests
+
+def test_agent_card(agent):
+    """Validate agent card structure and required fields."""
+    response = httpx.get(f"{agent}/.well-known/agent-card.json")
+    assert response.status_code == 200, "Agent card endpoint must return 200"
+
+    card_data = response.json()
+    errors = validate_agent_card(card_data)
+
+    assert not errors, f"Agent card validation failed:\n" + "\n".join(errors)
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("streaming", [True, False])
+async def test_message(agent, streaming):
+    """Test that agent returns valid A2A message format."""
+    events = await send_text_message("Hello", agent, streaming=streaming)
+
+    all_errors = []
+    for event in events:
+        match event:
+            case Message() as msg:
+                errors = validate_event(msg.model_dump())
+                all_errors.extend(errors)
+
+            case (task, update):
+                errors = validate_event(task.model_dump())
+                all_errors.extend(errors)
+                if update:
+                    errors = validate_event(update.model_dump())
+                    all_errors.extend(errors)
+
+            case _:
+                pytest.fail(f"Unexpected event type: {type(event)}")
+
+    assert events, "Agent should respond with at least one event"
+    assert not all_errors, f"Message validation failed:\n" + "\n".join(all_errors)
+
+# Add your custom tests here
