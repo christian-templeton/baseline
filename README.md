@@ -35,18 +35,15 @@ Agent actions
 2. Add your Activa (white) agent you want to evaluate\
    See example at https://github.com/agentbeats/agentify-example-tau-bench/blob/main/src/white_agent/agent.py
    
-2. Install dependencies locally\
+3. Install dependencies locally\
    ````uv sync````
-
-3. Build dockerfile\
-   ````docker build -t my-agent .````
 
 4. add an .env file to the folder you cloned this repository to in step 1, and add you Gemini API key here as below\
    ````GOOGLE_API_KEY=your_actual_api_key_here````\
    ````AGENT_URL=http://localhost9009````
 
-5. Run the container\
-   ````docker run -p 9009:9009 --env-file .env my-agent````
+5. Run the agent\
+   ````uv run python src/server.py````
 
 # Attribution
 
