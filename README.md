@@ -31,19 +31,26 @@ Agent actions
 
 1. Clone locally\
    ````git clone https://github.com/christian-templeton/contempletiva-agent````
-
-2. Add your Activa (white) agent you want to evaluate\
-   See example at https://github.com/agentbeats/agentify-example-tau-bench/blob/main/src/white_agent/agent.py
    
-3. Install dependencies locally\
+2. Install dependencies\
    ````uv sync````
 
-4. add an .env file to the folder you cloned this repository to in step 1, and add you Gemini API key here as below\
+3. add an .env file to the folder you cloned this repository to in step 1, and add you Gemini API key here as below\
    ````GOOGLE_API_KEY=your_actual_api_key_here````\
    ````AGENT_URL=http://localhost9009````
 
-5. Run the agent\
-   ````uv run python src/server.py````
+4. Run the agent\
+   ````uv run src/server.py````
+
+# Testing
+
+1. Install test dependencies
+   ````uv sync --extra test````
+
+2. Start your agent (see above)
+
+3. Run tests
+   ````uv run pytest --agent-url http://localhost:9009````
 
 # Attribution
 
