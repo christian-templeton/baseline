@@ -35,7 +35,7 @@ Agent actions
 2. Add your Activa (white) agent you want to evaluate\
    See example at https://github.com/agentbeats/agentify-example-tau-bench/blob/main/src/white_agent/agent.py
    
-3. Install dependencies locally\
+3. Install dependencies\
    ````uv sync````
 
 4. add an .env file to the folder you cloned this repository to in step 1, and add you Gemini API key here as below\
@@ -43,7 +43,22 @@ Agent actions
    ````AGENT_URL=http://localhost9009````
 
 5. Run the agent\
-   ````uv run python src/server.py````
+   ````uv run src/server.py````
+
+# Contributing
+
+1. Add Activa (white) agents you want to evaluate\
+   See example at https://github.com/agentbeats/agentify-example-tau-bench/blob/main/src/white_agent/agent.py
+
+2. Install test dependencies\
+   ````uv sync --extra test````
+
+3. Start your agent (see above)
+
+4. Run tests\
+   ````uv run pytest --agent-url http://localhost:9009````
+
+
 
 # Attribution
 
