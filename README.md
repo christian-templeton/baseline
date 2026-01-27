@@ -42,6 +42,9 @@ Agent actions
 4. Run the agent\
    ````uv run src/server.py````
 
+5. Shut down the agent\
+   ````CTRL+C````
+
 # Contributing and testing
 
 1. Add Activa (white) agents you want to evaluate\
@@ -50,7 +53,7 @@ Agent actions
 2. Install test dependencies\
    ````uv sync --extra test````
 
-3. Start your agent (see above)
+3. Start your agent (follow instructions for starting and shutting down above)
 
 4. Open a seperate terminal window 
 
