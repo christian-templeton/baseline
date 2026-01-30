@@ -1,4 +1,4 @@
-# How it works
+# How It Works
 
 The system uses two types of agents:
 
@@ -27,7 +27,28 @@ Agent actions
 
 3. The Activa Agent will respond to messages using its tools, unaware it's being evaluated.
 
-# Configuring and running
+# Project Structure
+
+````
+├── .github/
+│   └── workflows/
+│       └── test-and-publish.yml    # CI/CD pipeline for building and testing Docker images
+├── src/
+│   ├── agent.py                    # Core Agent2Agent agent implementation (Green Agent)
+│   ├── executor.py                 # Logic for executing agent tasks
+│   ├── messenger.py                # Utilities for Agents2Agent communication
+│   ├── server.py                   # Entry point for the Agents2Agent server
+│   ├── setup_data.py               # Data initialization and setup script
+│   └── tau2_testing_agent.toml     # Configuration for the agent's identity/card
+├── tests/
+│   ├── conftest.py                 # Pytest shared fixtures and configuration
+│   └── test_agent.py               # Integration and unit tests for agent logic
+├── Dockerfile                      # Docker image configuration for containerization and deployment
+├── pyproject.toml                  # Project dependencies and metadata (uv-managed)
+├── uv.lock                         # Dependency lockfile for reproducible environments
+└── README.md                       # Documentation for agent setup and operational flow
+````
+# Configuring and Running
 
 1. Clone locally\
    ````git clone https://github.com/christian-templeton/contempletiva-agent````
@@ -45,7 +66,7 @@ Agent actions
 5. Shut down the agent\
    ````CTRL+C````
 
-# Contributing and testing
+# Contributing and Testing
 
 1. Add Activa (white) agents you want to evaluate\
    See example at https://github.com/agentbeats/agentify-example-tau-bench/blob/main/src/white_agent/agent.py
