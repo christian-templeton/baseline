@@ -2,30 +2,30 @@
 
 The system uses two types of agents:
 
-Activa Agent: The assessment manager that administers Tau-Bench evaluations
+Contempletiva Agent: The assessment manager that administers Tau-Bench evaluations (https://github.com/christian-templeton/contempletiva-agent)
 - Receives requests specifying which agent to test and what tasks to run
 - Sets up the Tau-Bench environment with the specified configuration
 - Orchestrates the conversation between the benchmark and the target agent
 - Evaluates responses and reports results
 
-Contempletiva Agent: The target agent being tested (COMING MARCH 2026)
+Activa Agent: The target agent being tested
 - Can be any agent that implements the A2A protocol
 - Receives task instructions and responds with tool calls or messages
 - Operates without knowledge of being benchmarked
 
 Agent actions
-1. Send a message to the Activa Agent with:
-- The URL of the Contempletiva Agent to test
+1. Send a message to the Contempletiva Agent with:
+- The URL of the Activa Agent to test
 - The benchmark configuration (domain, task_id, etc.)
 
-2. The Activa Agent:
+2. The Compempletiva Agent:
 - Instantiates a Tau-Bench environment
-- Forwards user messages to the Contempletiva Agent
-- Collects the Contempletiva Agent's responses
+- Forwards user messages to the Activa Agent
+- Collects the Activa Agent's responses
 - Evaluates performance using Tau-Bench's scoring system
 - Returns the results
-
-3. The Contempletiva Agent will respond to messages using its tools, unaware it's being evaluated.
+  
+3. The Activa Agent will respond to messages using its tools, unaware it's being evaluated.
 
 # Project Structure
 
@@ -34,7 +34,7 @@ Agent actions
 │   └── workflows/
 │       └── test-and-publish.yml    # CI/CD pipeline for building and testing Docker images
 ├── src/
-│   ├── agent.py                    # Core Agent2Agent agent implementation (Green Agent)
+│   ├── agent.py                    # Core Agent2Agent agent implementation (Purple Agent)
 │   ├── executor.py                 # Logic for executing agent tasks
 │   ├── messenger.py                # Utilities for Agents2Agent communication
 │   ├── server.py                   # Entry point for the Agents2Agent server
