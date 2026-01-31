@@ -8,6 +8,10 @@ dependencies = [
     "a2a-sdk[http-server]>=0.3.20",
     "pydantic>=2.12.5",
     "uvicorn>=0.38.0",
+    "python-dotenv",
+    "gymnasium",
+    "tau2 @ git+https://github.com/sierra-research/tau2-bench",
+    "agentify-tau-bench @ git+https://github.com/sierra-research/tau2-bench#subdirectory=src/experiments/agentify_tau_bench",
 ]
 
 [project.optional-dependencies]

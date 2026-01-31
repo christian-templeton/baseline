@@ -7,11 +7,7 @@ COPY src src
 
 RUN \
     --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked
-
-RUN uv add python-dotenv gymnasium \
-    "tau2 @ git+https://github.com/sierra-research/tau2-bench" \
-    "agentify-tau-bench @ git+https://github.com/sierra-research/tau2-bench#subdirectory=src/experiments/agentify_tau_bench"
+    uv sync
 
 RUN mkdir -p /app/data/tau2 && \
     mkdir -p /tmp/tau2-bench && \
