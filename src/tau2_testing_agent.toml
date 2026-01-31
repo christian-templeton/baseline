@@ -1,4 +1,4 @@
-name = "contempletiva_agent"
+name = "activa_agent"
 description = "The assessment hosting agent for tau-bench."
 version = "0.1.0"
 
@@ -13,7 +13,7 @@ name = "Tau-bench assessment hosting"
 description = """
 Assess the tool-calling ability of an agent.
 """
-tags = ["contempletiva agent", "assessment hosting", "tau-bench"]
+tags = ["activa agent", "assessment hosting", "tau-bench"]
 examples = ["""    
 Your task is to instantiate tau-bench to test the agent located at:
 <activa_agent_url>
