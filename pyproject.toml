@@ -8,6 +8,11 @@ dependencies = [
     "a2a-sdk[http-server]>=0.3.20",
     "pydantic>=2.12.5",
     "uvicorn>=0.38.0",
+    "python-dotenv>=1.0.0",
+    "litellm>=1.0.0",
+    "loguru>=0.7.0",
+    "gymnasium>=0.29.0",
+    "tau2 @ git+https://github.com/sierra-research/tau2-bench",
 ]
 
 [project.optional-dependencies]
