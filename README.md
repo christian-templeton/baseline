@@ -68,7 +68,7 @@ Agent actions
 
 # Contributing and Testing
 
-1. Add Activa (white) agents you want to evaluate\
+1. Add (pro)active (white) agents you want to evaluate\
    See example at https://github.com/agentbeats/agentify-example-tau-bench/blob/main/src/white_agent/agent.py
 
 2. Install test dependencies\
