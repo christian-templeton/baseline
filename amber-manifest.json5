@@ -45,8 +45,5 @@
       "kind": "a2a",
       "endpoint": "endpoint"
     }
-  },
-  "exports": {
-    "a2a": true
   }
 }
