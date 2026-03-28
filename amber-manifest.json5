@@ -43,6 +43,6 @@
     }
   },
   "exports": {
-    "a2a": true
+    "a2a": null
   }
 }
