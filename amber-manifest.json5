@@ -5,13 +5,17 @@
     "properties": {
       "google_api_key": {
         "type": "string",
-        "secret": true
+        "secret": true,
+        "default": ""
       },
       "agent_url": {
         "type": "string",
         "default": "http://localhost:9002"
       }
     },
+    "required": [],
+    "additionalProperties": false
+  },
   "program": {
     "image": "ghcr.io/christian-templeton/baseline:latest",
     "entrypoint": [
@@ -37,8 +41,12 @@
     }
   },
   "provides": {
-    "": {
+    "a2a": {
       "kind": "a2a",
       "endpoint": "endpoint"
     }
+  },
+  "exports": {
+    "a2a": true
+  }
 }
