@@ -47,29 +47,38 @@ class Agent:
         """
         input_text = get_message_text(message)
 
+        # Attempt to parse as EvalRequest (for green agent role)
         try:
             request: EvalRequest = EvalRequest.model_validate_json(input_text)
             ok, msg = self.validate_request(request)
             if not ok:
                 await updater.reject(new_agent_text_message(msg))
                 return
-        except ValidationError as e:
-            await updater.reject(new_agent_text_message(f"Invalid request: {e}"))
+
+            # Implementation for EvalRequest
+            await updater.update_status(
+                TaskState.working, new_agent_text_message("Thinking...")
+            )
+            await updater.add_artifact(
+                parts=[
+                    Part(root=TextPart(text="The agent performed well.")),
+                    Part(root=DataPart(data={
+                        # structured assessment results
+                    }))
+                ],
+                name="Result",
+            )
             return
+        except ValidationError:
+            # Not an EvalRequest, handle as plain text (for purple agent role)
+            pass
 
-        # Replace example code below with your agent logic
-        # Use request.participants to get participant agent URLs by role
-        # Use request.config for assessment parameters
-
+        # Handle as purple agent
         await updater.update_status(
-            TaskState.working, new_agent_text_message("Thinking...")
+            TaskState.working, new_agent_text_message("Processing plain text message...")
         )
-        await updater.add_artifact(
-            parts=[
-                Part(root=TextPart(text="The agent performed well.")),
-                Part(root=DataPart(data={
-                    # structured assessment results
-                }))
-            ],
-            name="Result",
-        )
+
+        # Simple baseline response
+        response_text = f"I received your message: '{input_text}'. I am a baseline agent ready to help."
+
+        await updater.complete(new_agent_text_message(response_text))

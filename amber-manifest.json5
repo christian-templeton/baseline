@@ -5,7 +5,8 @@
     "properties": {
       "google_api_key": {
         "type": "string",
-        "secret": true
+        "secret": true,
+        "default": ""
       },
       "agent_url": {
         "type": "string",
