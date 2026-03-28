@@ -15,7 +15,8 @@
     image: "ghcr.io/christian-templeton/baseline:latest",
     entrypoint: "uv run src/server.py --host 0.0.0.0 --port 9002",
     env: {
-      GOOGLE_API_KEY: "${config.google_api_key}"
+      GOOGLE_API_KEY: "${config.google_api_key}",
+      AGENT_URL= "http://localhost:9002"
     },
     network: {
       endpoints: [
