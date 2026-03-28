@@ -68,6 +68,7 @@ class Agent:
                 ],
                 name="Result",
             )
+            await updater.complete()
             return
         except ValidationError:
             # Not an EvalRequest, handle as plain text (for purple agent role)

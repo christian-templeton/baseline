@@ -34,7 +34,7 @@
     "network": {
       "endpoints": [
         {
-          "name": "endpoint",
+          "name": "a2a_endpoint",
           "port": 9002
         }
       ]
@@ -43,7 +43,7 @@
   "provides": {
     "a2a": {
       "kind": "a2a",
-      "endpoint": "endpoint"
+      "endpoint": "a2a_endpoint"
     }
   },
   "exports": {
