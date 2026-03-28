@@ -12,9 +12,7 @@
         "default": "http://localhost:9002"
       }
     },
-    "required": [
-      "google_api_key"
-    ],
+    "required": [],
     "additionalProperties": false
   },
   "program": {
