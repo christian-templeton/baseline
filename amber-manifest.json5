@@ -42,7 +42,4 @@
       "endpoint": "endpoint"
     }
   },
-  "exports": {
-    "a2a": null
-  }
 }
