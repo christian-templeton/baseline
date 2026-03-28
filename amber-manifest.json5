@@ -40,10 +40,8 @@
       ]
     }
   },
-  "provides": {
-    "a2a": {
-      "kind": "a2a",
-      "endpoint": "endpoint"
-    }
-  }
+provides: {
+  a2a: { kind: "a2a", endpoint: "a2a_endpoint" },
+},
+exports: { a2a: "a2a" },
 }
