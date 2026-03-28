@@ -12,9 +12,6 @@
         "default": "http://localhost:9002"
       }
     },
-    "required": [],
-    "additionalProperties": false
-  },
   "program": {
     "image": "ghcr.io/christian-templeton/baseline:latest",
     "entrypoint": [
