@@ -1,0 +1,53 @@
+{
+  "manifest_version": "0.1.0",
+  "config_schema": {
+    "type": "object",
+    "properties": {
+      "google_api_key": {
+        "type": "string",
+        "secret": true
+      },
+      "agent_url": {
+        "type": "string",
+        "default": "http://localhost:9002"
+      }
+    },
+    "required": [
+      "google_api_key"
+    ],
+    "additionalProperties": false
+  },
+  "program": {
+    "image": "ghcr.io/christian-templeton/baseline:latest",
+    "entrypoint": [
+      "uv",
+      "run",
+      "src/server.py",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "9002"
+    ],
+    "env": {
+      "GOOGLE_API_KEY": "${config.google_api_key}",
+      "AGENT_URL": "${config.agent_url}"
+    },
+    "network": {
+      "endpoints": [
+        {
+          "name": "endpoint",
+          "port": 9002
+        }
+      ]
+    }
+  },
+  "provides": {
+    "a2a": {
+      "kind": "a2a",
+      "endpoint": "endpoint"
+    }
+  },
+  "exports": {
+    "a2a": "a2a"
+  }
+}
