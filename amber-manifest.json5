@@ -3,9 +3,7 @@
   config_schema: {
     type: "object",
     properties: {
-      GEMINI_API_KEY: {
-        type: "string",
-        secret: true
+        deepseek_api_key: { type: "string", secret: true }
       },
     },
     required: [],
@@ -15,8 +13,7 @@
     image: "ghcr.io/christian-templeton/baseline:latest",
     entrypoint: "uv run src/server.py --host 0.0.0.0 --port 9002",
     env: {
-      AGENT_URL: "http://localhost:9002",
-      GEMINI_API_KEY: "${config.GEMINI_API_KEY}"
+      AGENT_URL: "http://localhost:9002"
     },
     network: {
       endpoints: [
