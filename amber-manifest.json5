@@ -3,9 +3,29 @@
   config_schema: {
     type: "object",
     properties: {
+      agent_llm: {
+        type: "string",
+        default: "gemini/gemini-1.5-flash"
+      },
       google_api_key: {
         type: "string",
-        secret: true
+        secret: true,
+        default: ""
+      },
+      openai_api_key: {
+        type: "string",
+        secret: true,
+        default: ""
+      },
+      gemini_api_key: {
+        type: "string",
+        secret: true,
+        default: ""
+      },
+      deepseek_api_key: {
+        type: "string",
+        secret: true,
+        default: ""
       },
     },
     required: [],
@@ -15,7 +35,12 @@
     image: "ghcr.io/christian-templeton/baseline:latest",
     entrypoint: "uv run src/server.py --host 0.0.0.0 --port 9002",
     env: {
-      AGENT_URL: "http://localhost:9002"
+      AGENT_URL: "http://localhost:9002",
+      AGENT_LLM: "${config.agent_llm}",
+      GOOGLE_API_KEY: "${config.google_api_key}",
+      OPENAI_API_KEY: "${config.openai_api_key}",
+      GEMINI_API_KEY: "${config.gemini_api_key}",
+      DEEPSEEK_API_KEY: "${config.deepseek_api_key}",
     },
     network: {
       endpoints: [
@@ -28,5 +53,5 @@
 provides: {
   a2a: { kind: "a2a", endpoint: "a2a_endpoint" },
 },
-exports: { a2a: "a2a" },
+exports: { a2a: true },
 }
