@@ -3,7 +3,7 @@
   config_schema: {
     type: "object",
     properties: {
-        deepseek_api_key: { type: "string", secret: true }
+        green_deepseek_api_key: { type: "string", secret: true }
     },
     required: [],
     additionalProperties: false
