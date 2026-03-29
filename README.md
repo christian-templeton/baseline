@@ -44,6 +44,7 @@ Agent actions
 │   ├── conftest.py                 # Pytest shared fixtures and configuration
 │   └── test_agent.py               # Integration and unit tests for agent logic
 ├── Dockerfile                      # Docker image configuration for containerization and deployment
+├── [amber-manifest.json5](https://github.com/christian-templeton/baseline/blob/main/amber-manifest.json5)   # [Amber readme](https://github.com/RDI-Foundation/tau2-agentbeats/blob/main/amber/README.md) for instructions on compiling and running the full scenario (Comtempletiva agent + Activa agent + gateway) using the Amber CLI
 ├── pyproject.toml                  # Project dependencies and metadata (uv-managed)
 ├── uv.lock                         # Dependency lockfile for reproducible environments
 └── README.md                       # Documentation for agent setup and operational flow
