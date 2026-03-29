@@ -3,7 +3,10 @@
   config_schema: {
     type: "object",
     properties: {
-        green_deepseek_api_key: { type: "string", secret: true }
+      agent_llm: { type: "string" },
+      openai_api_key: { type: "string", secret: true },
+      gemini_api_key: { type: "string", secret: true },
+      deepseek_api_key: { type: "string", secret: true },
     },
     required: [],
     additionalProperties: false
@@ -12,7 +15,11 @@
     image: "ghcr.io/christian-templeton/baseline:latest",
     entrypoint: "uv run src/server.py --host 0.0.0.0 --port 9002",
     env: {
-      GREEN_DEEPSEEK_API_KEY "${config.green_deepseek_api_key}",
+      AGENT_LLM: "${config.agent_llm}",
+      OPENAI_API_KEY: "${config.openai_api_key}",
+      GEMINI_API_KEY: "${config.gemini_api_key}",
+      DEEPSEEK_API_KEY: "${config.deepseek_api_key}",
+      LOG_LEVEL: "INFO",
       AGENT_URL: "http://localhost:9002"
     },
     network: {
