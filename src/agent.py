@@ -39,37 +39,37 @@ class Agent:
     async def run(self, message: Message, updater: TaskUpdater) -> None:
         """Implement your agent logic here.
 
-        Args:
-            message: The incoming message
-            updater: Report progress (update_status) and results (add_artifact)
-
-        Use self.messenger.talk_to_agent(message, url) to call other agents.
+        This agent can handle both EvalRequest JSON (as an Assessment Manager)
+        and plain text messages (as a Target Agent).
         """
         input_text = get_message_text(message)
 
         try:
-            request: EvalRequest = EvalRequest.model_validate_json(input_text)
+            # Try to parse as Green Agent evaluation request
+            request = EvalRequest.model_validate_json(input_text)
             ok, msg = self.validate_request(request)
             if not ok:
                 await updater.reject(new_agent_text_message(msg))
                 return
-        except ValidationError as e:
-            await updater.reject(new_agent_text_message(f"Invalid request: {e}"))
+
+            # Green Agent logic: Acknowledge the request and provide a dummy result
+            await updater.update_status(
+                TaskState.working, new_agent_text_message("Assessment started...")
+            )
+            await updater.add_artifact(
+                parts=[
+                    Part(root=TextPart(text="Baseline assessment complete.")),
+                    Part(root=DataPart(data={"pass_rate": 1.0}))
+                ],
+                name="Result",
+            )
+            await updater.complete(new_agent_text_message("Assessment finished successfully."))
             return
 
-        # Replace example code below with your agent logic
-        # Use request.participants to get participant agent URLs by role
-        # Use request.config for assessment parameters
-
-        await updater.update_status(
-            TaskState.working, new_agent_text_message("Thinking...")
-        )
-        await updater.add_artifact(
-            parts=[
-                Part(root=TextPart(text="The agent performed well.")),
-                Part(root=DataPart(data={
-                    # structured assessment results
-                }))
-            ],
-            name="Result",
-        )
+        except (ValidationError, ValueError):
+            # Fallback for plain text messages (Purple Agent role)
+            await updater.update_status(
+                TaskState.working, new_agent_text_message("Processing message...")
+            )
+            response_text = f"Echo: {input_text}"
+            await updater.complete(new_agent_text_message(response_text))
