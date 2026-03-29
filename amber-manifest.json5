@@ -15,7 +15,7 @@
     image: "ghcr.io/christian-templeton/baseline:latest",
     entrypoint: "uv run src/server.py --host 0.0.0.0 --port 9002",
     env: {
-      AGENT_LLM: "${config.agent_llm}",
+      AGENT_LLM: "openai/gpt-4o-mini",
       OPENAI_API_KEY: "${config.openai_api_key}",
       GEMINI_API_KEY: "${config.gemini_api_key}",
       DEEPSEEK_API_KEY: "${config.deepseek_api_key}",
