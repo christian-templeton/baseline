@@ -2,13 +2,13 @@
 
 The system uses two types of agents:
 
-(con)template agent: The assessment manager that administers Tau-Bench evaluations (https://github.com/christian-templeton/contempletiva-agent)
+(con)template agent: The assessment manager is designed to administer Tau-Bench evaluations (https://github.com/christian-templeton/contempletiva-agent)
 - Receives requests specifying which agent to test and what tasks to run
 - Sets up the Tau-Bench environment with the specified configuration
 - Orchestrates the conversation between the benchmark and the target agent
 - Evaluates responses and reports results
 
-(pro)active agent: The target agent being tested
+(pro)active agent: The target agent is designed to be tested
 - Can be any agent that implements the A2A protocol
 - Receives task instructions and responds with tool calls or messages
 - Operates without knowledge of being benchmarked
@@ -18,14 +18,14 @@ Agent actions
 - The URL of the (pro)active agent to test
 - The benchmark configuration (domain, task_id, etc.)
 
-2. The Compempletiva Agent:
-- Instantiates a Tau-Bench environment
-- Forwards user messages to the (pro)active agent
-- Collects the (pro)active agent's responses
-- Evaluates performance using Tau-Bench's scoring system
-- Returns the results
+2. The Compempletiva Agent is designed to:
+- Instantiate a Tau-Bench environment
+- Forward user messages to the (pro)active agent
+- Collect the (pro)active agent's responses
+- Evaluate performance using Tau-Bench's scoring system
+- Return the results
   
-3. The (pro)active agent will respond to messages using its tools, unaware it's being evaluated.
+3. The (pro)active agent is designed to respond to messages using its tools, unaware it's being evaluated.
 
 # Project Structure
 
